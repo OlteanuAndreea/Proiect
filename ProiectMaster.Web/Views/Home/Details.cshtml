@@ -1,0 +1,121 @@
+﻿@model ProductVM
+
+@inject IHttpContextAccessor HttpContextAccessor
+@{ 
+    bool isInBag = false;
+    bool isInWishlist = false;
+
+    var lstwishlist = HttpContextAccessor.HttpContext.Session.Get<List<int>>(SessionHelper2.WishList);
+    if (lstwishlist != null && lstwishlist.Contains(Model.Id))
+        isInWishlist = true;
+
+    var lstCart = HttpContextAccessor.HttpContext.Session.Get<List<int>>(SessionHelper.ShoppingCart);
+    if (lstCart != null && lstCart.Contains(Model.Id))
+        isInBag = true;
+
+    var route = isInBag ? "/Remove/{0}" : "/Add/{0}";
+    route = string.Format(route, Model.Id);
+    var route1 = isInWishlist ? "/RemoveWishList/{0}" : "/AddWishList/{0}";
+    route1 = string.Format(route1, Model.Id);
+    
+}
+
+<h2 class="text-secondary" style="color:black">Order this gift!</h2>
+
+<form action="@route" method="post">
+
+    <div class="p-4 border rounded row">
+        <div class="col-3">
+            <img src="~/@Model.ImagePath" alt="no image" width="100%" style="border-radius:5px; border:1px solid #bbb9b9;" />
+        </div>
+        <div class="col-8">
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label>Product name</label>
+                </div>
+                <div class="col-4">
+                    <input asp-for="Name" readonly class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label>Price</label>
+                </div>
+                <div class="col-4">
+                    <input asp-for="Price" readonly class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4"></div>
+                <div class="col-8">
+                    @if (isInBag)
+                    {
+        <label>  <span class="fas fa-close"></span> </label>
+                        <button type="submit" value="Remove from bag" class="btn btn-danger form-control">Remove from cart ... </button> }
+                    else
+                    {
+        <label>  <span class="fas fa-shopping-cart"></span> 10 more users added this product to their cart. Hurry up!<span class="fas fa-users"></span></label>
+                        <button type="submit" value="Add to bag" class="btn btn-secondary form-control">Add to cart</button>}
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <div class="col-4">
+                        <label>Description</label>
+                    </div>
+                    <div class="col-4">
+
+                        @Html.TextArea("Description", Model.Description, new { @readonly = "readonly" })
+                    </div>
+                </div>
+                <br /> <br />
+
+                <div class=" col-1">
+
+                </div>
+
+            </div>
+
+            <div class=" col-1">
+
+            </div>
+
+
+        </div>
+
+        <br />
+
+
+
+</form>
+
+
+<form action="@route1" method="post">
+    <br /><br />
+
+    <div class="col-8">
+
+        <div class="form-group row">
+            <label>WISHLIST</label>
+            @if (isInWishlist)
+            {
+        <button type="submit" value="Remove from wish" class="btn btn-danger form-control">Remove</button> }
+                    else
+                    {
+        <button type="submit" value="Add to wish" class="btn btn-secondary form-control">Add</button>            }
+
+
+        </div>
+        <div class=" col-1">
+
+        </div>
+
+    </div>
+    <br />
+    <div class="form-group">
+        <a asp-action="Index" class="btn btn-success">Back to List</a>
+    </div>
+
+</form>
